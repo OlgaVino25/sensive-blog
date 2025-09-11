@@ -136,3 +136,16 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+/media
+Thumbs.db
+Desktop.ini
+*.lnk
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.sublime-*
+*.user
+*.userosscache
