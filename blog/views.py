@@ -8,8 +8,7 @@ def get_related_posts_count(tag):
 
 
 def get_likes_count(post):
-    if hasattr(post, 'likes_count'):
-        return post.likes_count
+
     return post.likes.count()
 
 def serialize_post(post):
