@@ -2,6 +2,11 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
+# добавила
+class CustomQuerySet(models.QuerySet):
+    def year(self, year):
+        posts_at_year = self.filter(published_at__year=year).order_by('published_at')
+        return posts_at_year
 
 class Post(models.Model):
     title = models.CharField("Заголовок", max_length=200)
@@ -20,6 +25,8 @@ class Post(models.Model):
         User, related_name="liked_posts", verbose_name="Кто лайкнул", blank=True
     )
     tags = models.ManyToManyField("Tag", related_name="posts", verbose_name="Теги")
+
+    objects = CustomQuerySet.as_manager() # добавила
 
     def __str__(self):
         return self.title
