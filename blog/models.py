@@ -10,22 +10,32 @@ class CustomQuerySet(models.QuerySet):
         return posts_at_year
 
     def popular(self):
-        return self.annotate(likes_count=Count('likes', distinct=True)).order_by('-likes_count')
-    
+        return self.annotate(likes_count=Count("likes", distinct=True)).order_by(
+            "-likes_count"
+        )
 
     def fetch_with_comments_count(self):
         posts_ids = [post.id for post in self]
-        posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(comments_count=Count('comments', distinct=True))
+        posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(
+            comments_count=Count("comments", distinct=True)
+        )
         count_for_id = {post.id: post.comments_count for post in posts_with_comments}
 
         for post in self:
             post.comments_count = count_for_id.get(post.id, 0)
 
         return list(self)
-    
 
     def with_prefetched_tags(self):
-        return self.prefetch_related(Prefetch('tags', queryset=Tag.objects.annotate(posts_count=Count('posts'))))
+        return self.prefetch_related(
+            Prefetch("tags", queryset=Tag.objects.annotate(posts_count=Count("posts")))
+        )
+
+    def with_author(self):
+        return self.select_related("author")
+
+    def fully_optimized(self):
+        return self.with_author().with_prefetched_tags()
 
 
 class TagQuerySet(models.QuerySet):
