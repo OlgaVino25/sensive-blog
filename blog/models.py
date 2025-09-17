@@ -28,7 +28,10 @@ class CustomQuerySet(models.QuerySet):
 
     def with_prefetched_tags(self):
         return self.prefetch_related(
-            Prefetch("tags", queryset=Tag.objects.annotate(posts_count=Count("posts")))
+            Prefetch(
+                "tags",
+                queryset=Tag.objects.annotate(posts_count=Count("posts")),
+            )
         )
 
     def with_author(self):
