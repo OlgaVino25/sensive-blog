@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from blog.models import Comment, Post, Tag
+from blog.models import Post, Tag
 from django.db.models import Count, Prefetch
 
 
@@ -85,7 +85,6 @@ def post_detail(request, slug):
             Prefetch(
                 "tags",
                 queryset=Tag.objects.annotate(posts_count=Count("posts")),
-                to_attr="prefetched_tags_with_count",
             ),
         )
         .annotate(
