@@ -38,7 +38,7 @@ class CustomQuerySet(models.QuerySet):
         return self.select_related("author")
 
     def fully_optimized(self):
-        return self.with_author().with_prefetched_tags()
+        return self.with_author().with_prefetched_tags().fetch_with_comments_count()
 
 
 class TagQuerySet(models.QuerySet):
