@@ -15,16 +15,17 @@ class CustomQuerySet(models.QuerySet):
         )
 
     def fetch_with_comments_count(self):
-        posts_ids = [post.id for post in self]
-        posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(
-            comments_count=Count("comments", distinct=True)
-        )
-        count_for_id = {post.id: post.comments_count for post in posts_with_comments}
+        return self.annotate(comments_count=Count("comments", distinct=True))
+        # posts_ids = [post.id for post in self]
+        # posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(
+        #     comments_count=Count("comments", distinct=True)
+        # )
+        # count_for_id = {post.id: post.comments_count for post in posts_with_comments}
 
-        for post in self:
-            post.comments_count = count_for_id.get(post.id, 0)
+        # for post in self:
+        #     post.comments_count = count_for_id.get(post.id, 0)
 
-        return list(self)
+        # return list(self)
 
     def with_prefetched_tags(self):
         return self.prefetch_related(
