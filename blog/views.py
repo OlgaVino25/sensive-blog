@@ -4,6 +4,7 @@ from django.db.models import Count, Prefetch
 
 
 def serialize_post_optimized(post):
+    post_tags = post.tags.all()
     return {
         "title": post.title,
         "teaser_text": post.text[:200],
@@ -12,8 +13,8 @@ def serialize_post_optimized(post):
         "image_url": post.image.url if post.image else None,
         "published_at": post.published_at,
         "slug": post.slug,
-        "tags": [serialize_tag_optimized(tag) for tag in post.tags.all()],
-        "first_tag_title": post.tags.all()[0].title,
+        "tags": [serialize_tag_optimized(tag) for tag in post_tags],
+        "first_tag_title": post_tags[0].title if post_tags else None,
     }
 
 
@@ -25,9 +26,9 @@ def serialize_tag_optimized(tag):
 
 
 def index(request):
-    most_popular_posts = Post.objects.popular().fully_optimized()[:5]
+    most_popular_posts = Post.objects.popular()[:5].fully_optimized()
 
-    most_fresh_posts = Post.objects.order_by("-published_at").fully_optimized()[:5]
+    most_fresh_posts = Post.objects.order_by("-published_at")[:5].fully_optimized()
 
     fresh_posts_ids = [post.id for post in most_fresh_posts]
     fresh_posts_with_likes = Post.objects.filter(id__in=fresh_posts_ids).annotate(
@@ -86,7 +87,7 @@ def post_detail(request, slug):
         "tags": serialized_tags,
     }
 
-    most_popular_posts = Post.objects.popular().fully_optimized()[:5]
+    most_popular_posts = Post.objects.popular()[:5].fully_optimized()
 
     most_popular_tags = Tag.objects.popular()[:5]
 
@@ -103,11 +104,11 @@ def post_detail(request, slug):
 def tag_filter(request, tag_title):
     tag = get_object_or_404(Tag, title=tag_title)
 
-    most_popular_posts = Post.objects.popular().fully_optimized()[:5]
+    most_popular_posts = Post.objects.popular()[:5].fully_optimized()
 
     most_popular_tags = Tag.objects.popular()[:5]
 
-    related_posts = Post.objects.filter(tags=tag).fully_optimized()[:20]
+    related_posts = Post.objects.filter(tags=tag)[:20].fully_optimized()
 
     related_posts_ids = [post.id for post in related_posts]
     related_posts_with_likes = Post.objects.filter(id__in=related_posts_ids).annotate(
