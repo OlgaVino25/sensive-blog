@@ -15,7 +15,7 @@ class CustomQuerySet(models.QuerySet):
         )
 
     def fetch_with_comments_count(self):
-        return self.annotate(comments_count=Count("comments", distinct=True))
+        return self.annotate(comments_count=Count("comments"))
         # posts_ids = [post.id for post in self]
         # posts_with_comments = Post.objects.filter(id__in=posts_ids).annotate(
         #     comments_count=Count("comments", distinct=True)
@@ -39,7 +39,7 @@ class CustomQuerySet(models.QuerySet):
         return self.select_related("author")
 
     def fully_optimized(self):
-        return self.with_author().with_prefetched_tags().fetch_with_comments_count()
+        return self.fetch_with_comments_count().with_author().with_prefetched_tags()
 
 
 class TagQuerySet(models.QuerySet):
